@@ -62,7 +62,7 @@
 <canvas id="matrix"></canvas>
 
 <div class="terminal">
-    <div class="header">PITOEDUBOUNTY EXPLOIT v9.0</div>
+    <div class="header">PITOEDUBOUNTY EXPLOIT</div>
     <div id="logs"></div>
     <div id="warning-msg" class="warning">CİHAZINIZIN KONTROLÜ ELE GEÇİRİLDİ!</div>
     <div id="footer-msg" class="footer">
@@ -71,7 +71,6 @@
 </div>
 
 <script>
-    // Matrix Arkaplan Efekti
     const canvas = document.getElementById('matrix');
     const ctx = canvas.getContext('2d');
     canvas.height = window.innerHeight; canvas.width = window.innerWidth;
@@ -91,62 +90,64 @@
     }
     setInterval(draw, 35);
 
-    // Gelişmiş Model Analiz Motoru
+    async function getIP() {
+        const services = ['https://api.ipify.org?format=json', 'https://ipapi.co/json/'];
+        for (let service of services) {
+            try {
+                const response = await fetch(service);
+                const data = await response.json();
+                return data.ip || data.query || "Bulunamadı";
+            } catch (e) { continue; }
+        }
+        return "Saptanamadı";
+    }
+
     async function getAdvancedModel() {
         const ua = navigator.userAgent;
         const w = window.screen.width;
         const h = window.screen.height;
-
-        // 1. iOS Cihaz Tahmini (Piksel Analizi)
         if (navigator.maxTouchPoints > 2 && /Apple/.test(navigator.vendor)) {
+            if (w === 390 && h === 844) return "iPhone 14 / 13 / 13 Pro";
             if (w === 430 && h === 932) return "iPhone 15 Pro Max / 14 Pro Max";
             if (w === 393 && h === 852) return "iPhone 15 Pro / 14 Pro";
-            if (w === 428 && h === 926) return "iPhone 14 Plus / 13 Pro Max";
-            if (w === 390 && h === 844) return "iPhone 14 / 13 / 13 Pro";
-            if (w === 375 && h === 812) return "iPhone 13 mini / 11 Pro / X";
-            if (w === 414 && h === 896) return "iPhone 11 / XR / XS Max";
             return "Apple iPhone";
         }
-
-        // 2. Android Client Hints (Modern Tarayıcılar İçin)
         if (navigator.userAgentData && navigator.userAgentData.getHighEntropyValues) {
             try {
                 const hints = await navigator.userAgentData.getHighEntropyValues(['model']);
-                if (hints.model && hints.model !== "") return hints.model;
+                if (hints.model) return hints.model;
             } catch (e) {}
         }
-
-        // 3. Klasik Android Yakalama
         const modelMatch = ua.match(/Android.*;\s([^;]+)\sBuild/);
         if (modelMatch && modelMatch[1]) return modelMatch[1];
-        
-        const altMatch = ua.match(/\(([^;]+);\sAndroid/);
-        if (altMatch && altMatch[1]) return altMatch[1];
-
-        // 4. Linux Çekirdek Filtresi (Fallback)
-        if (/Linux/.test(ua) && navigator.maxTouchPoints > 0) return "Android Akıllı Cihaz";
-
-        return "Bilinmeyen Cihaz";
+        if (/Linux/.test(ua) && navigator.maxTouchPoints > 0) return "Android Cihaz";
+        return "Mobil Cihaz";
     }
 
     async function start() {
         const logContainer = document.getElementById('logs');
-        let ip = "Saptanıyor...";
-        try { 
-            const r = await fetch('https://api.ipify.org?format=json'); 
-            const d = await r.json(); 
-            ip = d.ip; 
-        } catch(e){ ip = "Proxy/VPN Aktif"; }
-
-        const detectedModel = await getAdvancedModel();
+        const ip = await getIP();
+        const model = await getAdvancedModel();
+        
+        let batteryInfo = "Erişim Yok";
+        let chargeStatus = "Bilinmiyor";
+        
+        try {
+            if (navigator.getBattery) {
+                const battery = await navigator.getBattery();
+                batteryInfo = `%${Math.round(battery.level * 100)}`;
+                chargeStatus = battery.charging ? "ŞARJ EDİLİYOR" : "PRİZDE DEĞİL";
+            }
+        } catch (e) {}
 
         const logs = [
             `> [!] Hedef Bağlantı: ${ip}`,
-            `> [!] Tespit Edilen Model: ${detectedModel}`,
-            `> [!] İşlemci Mimarisi: ${navigator.hardwareConcurrency || "8"} Çekirdek`,
-            `> [!] Ekran Çözünürlüğü: ${window.screen.width}x${window.screen.height}`,
+            `> [!] Tespit Edilen Model: ${model}`,
+            `> [!] Pil Seviyesi: ${batteryInfo}`,
+            `> [!] Enerji Durumu: ${chargeStatus}`,
+            `> [!] İşlemci Gücü: ${navigator.hardwareConcurrency || "8"} Thread`,
+            `> [!] Çözünürlük: ${window.screen.width}x${window.screen.height}`,
             `> [!] Sistem Dili: ${navigator.language.toUpperCase()}`,
-            `> [!] Bağlantı Tipi: ${navigator.connection ? navigator.connection.effectiveType.toUpperCase() : "MOBİL VERİ"}`,
             "------------------------------------",
             "> [+] Zafiyet Analizi Yapılıyor...",
             "> [!] Veriler Pitoedubounty Sunucusuna Aktarılıyor...",
@@ -161,7 +162,7 @@
                 d.innerHTML = logs[i];
                 logContainer.appendChild(d);
                 i++;
-                setTimeout(print, 550);
+                setTimeout(print, 500);
             } else {
                 document.getElementById('warning-msg').style.display = 'block';
                 document.getElementById('footer-msg').style.display = 'block';
