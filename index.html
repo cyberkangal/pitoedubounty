@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pitoedubounty | Hardware Audit</title>
+    <title>Pitoedubounty | Security Awareness</title>
     <style>
         canvas { position: fixed; top: 0; left: 0; z-index: -1; }
         body {
@@ -57,11 +57,11 @@
             justify-content: center;
             text-align: center;
             z-index: 100;
-            padding: 20px;
+            padding: 30px;
             box-sizing: border-box;
         }
-        #final-screen h1 { color: #ff0000; font-size: 2.2rem; margin-bottom: 20px; }
-        #final-screen p { color: #fff; font-size: 1.1rem; line-height: 1.6; max-width: 700px; }
+        #final-screen h1 { color: #ff0000; font-size: 2rem; margin-bottom: 20px; }
+        #final-screen p { color: #fff; font-size: 1.05rem; line-height: 1.6; max-width: 750px; text-align: center; }
         .highlight { color: #0f0; font-weight: bold; }
         @keyframes fadeIn { to { opacity: 1; } }
         @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
@@ -78,12 +78,19 @@
 </div>
 
 <div id="final-screen">
-    <h1>GÜVENDE DEĞİLSİNİZ!</h1>
+    <h1>PANİK YAPMAYIN, BİZ DOSTUZ!</h1>
     <p>
-        Az önce sadece bir <span class="highlight">QR kod</span> okutarak sistem bilgilerinizi bizimle paylaştınız.<br><br>
-        Gerçek bir saldırgan bu verileri kullanarak cihazınıza sızabilir veya sizi hedef alan <span class="highlight">oltalama (phishing)</span> saldırıları düzenleyebilir.<br><br>
-        DİKKAT EDİN: Kaynağını bilmediğiniz QR kodları sorgusuz okutmayın!<br><br>
-        <b>Siber Güvenlik Farkındalığı | Pitoedubounty</b>
+        Az önce sadece bir <span class="highlight">QR kod</span> okutarak; IP adresiniz, cihaz modeliniz ve pil durumunuz gibi teknik bilgileri bizimle paylaştınız. Biz sadece bu <span class="highlight">masum verileri</span> aldık.<br><br>
+        
+        Ancak gerçek bir saldırgan, bu yöntemle sizi sahte bir giriş sayfasına yönlendirerek <span class="highlight">şifrelerinizi, banka bilgilerinizi</span> veya <span class="highlight">kişisel verilerinizi</span> çalabilirdi.<br><br>
+
+        Sadece QR kodlar değil, girdiğiniz her web sitesi güvenliğiniz için bir risk taşıyabilir. <span class="highlight">Web güvenliğiniz için:</span><br>
+        • Bilmediğiniz kaynaklardan gelen linklere tıklamayın.<br>
+        • "HTTPS" protokolü olmayan sitelerde veri paylaşmayın.<br>
+        • QR kodların arkasındaki URL'yi kontrol etmeden işlem yapmayın.<br><br>
+
+        <b>Unutmayın: Dijital dünyada en güçlü kalkanınız farkındalığınızdır.</b><br><br>
+        <span class="highlight">Siber Güvenlik Farkındalığı | Pitoedubounty</span>
     </p>
 </div>
 
@@ -116,7 +123,7 @@
                 return data.ip || data.query || "Bulunamadı";
             } catch (e) { continue; }
         }
-        return "Proxy Aktif";
+        return "Proxy/VPN Aktif";
     }
 
     async function getAdvancedModel() {
@@ -133,6 +140,7 @@
             if (w === 390 && h === 844) return "iPhone 14 / 13 / 13 Pro";
             if (w === 430 && h === 932) return "iPhone 15 Pro Max / 14 Pro Max";
             if (w === 393 && h === 852) return "iPhone 15 Pro / 14 Pro";
+            if (w === 375 && h === 812) return "iPhone 13 mini / 12 Pro / X";
             return "Apple iPhone";
         }
         if (navigator.userAgentData && navigator.userAgentData.getHighEntropyValues) {
