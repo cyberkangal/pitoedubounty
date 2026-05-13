@@ -3,103 +3,82 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pitoedubounty | Security Awareness</title>
+    <title>Pitoedubounty | Security Audit</title>
     <style>
         canvas { position: fixed; top: 0; left: 0; z-index: -1; }
         body {
-            background-color: #000;
-            color: #0f0;
+            background-color: #000; color: #0f0;
             font-family: 'Courier New', Courier, monospace;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            margin: 0;
-            overflow: hidden;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            height: 100vh; margin: 0; overflow: hidden;
         }
+        /* Başlangıç Butonu */
+        #start-btn {
+            padding: 15px 30px; font-size: 1.2rem; color: #0f0; background: transparent;
+            border: 2px solid #0f0; cursor: pointer; font-family: inherit;
+            box-shadow: 0 0 15px #0f0; animation: blink 1s infinite;
+        }
+        #start-btn:hover { background: #0f0; color: #000; }
+
         .terminal {
-            width: 95%;
-            max-width: 600px;
-            border: 2px solid #0f0;
-            padding: 20px;
-            box-shadow: 0 0 25px rgba(0, 255, 0, 0.5);
-            background: rgba(0, 10, 0, 0.94);
-            transition: opacity 1s ease-in-out;
+            width: 95%; max-width: 600px; border: 2px solid #0f0; padding: 20px;
+            box-shadow: 0 0 25px rgba(0, 255, 0, 0.5); background: rgba(0, 10, 0, 0.94);
+            display: none; transition: opacity 1s;
         }
-        .header {
-            text-align: center;
-            font-weight: bold;
-            border-bottom: 2px solid #0f0;
-            padding-bottom: 10px;
-            margin-bottom: 15px;
-            letter-spacing: 2px;
+        /* Virüs Sarsıntı Efekti */
+        .shake { animation: shake 0.2s infinite; }
+        @keyframes shake {
+            0% { transform: translate(1px, 1px) rotate(0deg); }
+            20% { transform: translate(-3px, 0px) rotate(1deg); }
+            40% { transform: translate(3px, 2px) rotate(-1deg); }
+            60% { transform: translate(-1px, -1px) rotate(1deg); }
+            100% { transform: translate(1px, -2px) rotate(-1deg); }
         }
+        .header { text-align: center; font-weight: bold; border-bottom: 2px solid #0f0; padding-bottom: 10px; margin-bottom: 15px; }
         .line { margin: 6px 0; font-size: 13px; opacity: 0; animation: fadeIn 0.3s forwards; }
-        .warning-red {
-            color: #ff0000;
-            font-weight: bold;
-            text-align: center;
-            margin-top: 15px;
-            display: none;
-            border: 1px solid #ff0000;
-            padding: 10px;
-            animation: blink 0.8s infinite;
-        }
+        .warning-red { color: #ff0000; font-weight: bold; text-align: center; margin-top: 15px; display: none; border: 1px solid #ff0000; padding: 10px; animation: blink 0.8s infinite; }
+        
         #final-screen {
-            position: fixed;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            background: #000;
-            display: none;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            z-index: 100;
-            padding: 30px;
-            box-sizing: border-box;
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: #000; display: none; flex-direction: column; align-items: center; justify-content: center;
+            text-align: center; z-index: 100; padding: 30px;
         }
-        #final-screen h1 { color: #ff0000; font-size: 2rem; margin-bottom: 20px; }
-        #final-screen p { color: #fff; font-size: 1.05rem; line-height: 1.6; max-width: 750px; text-align: center; }
+        #final-screen h1 { color: #ff0000; font-size: 2rem; }
+        #final-screen p { color: #fff; font-size: 1.05rem; line-height: 1.6; max-width: 750px; }
         .highlight { color: #0f0; font-weight: bold; }
         @keyframes fadeIn { to { opacity: 1; } }
         @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
     </style>
 </head>
-<body>
+<body oncontextmenu="return false;">
 
 <canvas id="matrix"></canvas>
 
+<button id="start-btn">SİSTEMİ TARAMAYI BAŞLAT</button>
+
 <div class="terminal" id="terminal">
-    <div class="header">PITOEDUBOUNTY EXPLOIT</div>
+    <div class="header">PITOEDUBOUNTY CORE EXPLOIT</div>
     <div id="logs"></div>
-    <div id="access-msg" class="warning-red">CİHAZINIZIN KONTROLÜ ELE GEÇİRİLDİ!</div>
+    <div id="access-msg" class="warning-red">SİSTEM KRİTİK HATASI: CİHAZ KİLİTLENDİ!</div>
 </div>
 
 <div id="final-screen">
     <h1>PANİK YAPMAYIN, BİZ DOSTUZ!</h1>
     <p>
         Az önce sadece bir <span class="highlight">QR kod</span> okutarak; IP adresiniz, cihaz modeliniz ve pil durumunuz gibi teknik bilgileri bizimle paylaştınız. Biz sadece bu <span class="highlight">masum verileri</span> aldık.<br><br>
-        
-        Ancak gerçek bir saldırgan, bu yöntemle sizi sahte bir giriş sayfasına yönlendirerek <span class="highlight">şifrelerinizi, banka bilgilerinizi</span> veya <span class="highlight">kişisel verilerinizi</span> çalabilirdi.<br><br>
-
-        Sadece QR kodlar değil, girdiğiniz her web sitesi güvenliğiniz için bir risk taşıyabilir. <span class="highlight">Web güvenliğiniz için:</span><br>
-        • Bilmediğiniz kaynaklardan gelen linklere tıklamayın.<br>
-        • "HTTPS" protokolü olmayan sitelerde veri paylaşmayın.<br>
-        • QR kodların arkasındaki URL'yi kontrol etmeden işlem yapmayın.<br><br>
-
-        <b>Unutmayın: Dijital dünyada en güçlü kalkanınız farkındalığınızdır.</b><br><br>
+        Ancak gerçek bir saldırgan, bu yöntemle sizi sahte bir giriş sayfasına yönlendirerek <span class="highlight">şifrelerinizi ve kişisel verilerinizi</span> çalabilirdi.<br><br>
+        <span class="highlight">Web güvenliğiniz için:</span> Bilmediğiniz kaynaklardan gelen linklere tıklamayın ve HTTPS protokolü olmayan sitelerde veri paylaşmayın.<br><br>
+        <b>Dijital dünyada en güçlü kalkanınız farkındalığınızdır.</b><br><br>
         <span class="highlight">Siber Güvenlik Farkındalığı | Pitoedubounty</span>
     </p>
 </div>
 
 <script>
+    // Matrix Efekti
     const canvas = document.getElementById('matrix');
     const ctx = canvas.getContext('2d');
     canvas.height = window.innerHeight; canvas.width = window.innerWidth;
-    const chars = "10";
-    const fontSize = 16;
+    const chars = "10"; const fontSize = 16;
     const columns = canvas.width / fontSize;
     const drops = Array(Math.floor(columns)).fill(1);
     function draw() {
@@ -114,69 +93,37 @@
     }
     setInterval(draw, 35);
 
+    // Kilit Mekanizmaları (PC için)
+    document.onkeydown = function(e) {
+        if (e.keyCode == 123 || (e.ctrlKey && e.shiftKey && e.keyCode == 73)) return false;
+    };
+
     async function getIP() {
-        const services = ['https://api.ipify.org?format=json', 'https://ipapi.co/json/'];
-        for (let service of services) {
-            try {
-                const response = await fetch(service);
-                const data = await response.json();
-                return data.ip || data.query || "Bulunamadı";
-            } catch (e) { continue; }
-        }
-        return "Proxy/VPN Aktif";
-    }
-
-    async function getAdvancedModel() {
-        const ua = navigator.userAgent;
-        const w = window.screen.width;
-        const h = window.screen.height;
-
-        if (ua.indexOf("Windows NT 10.0") != -1) return "Windows 10/11 PC";
-        if (ua.indexOf("Windows NT 11.0") != -1) return "Windows 11 PC";
-        if (ua.indexOf("Macintosh") != -1) return "Apple Mac / MacBook";
-        if (ua.indexOf("X11") != -1) return "Linux PC";
-
-        if (navigator.maxTouchPoints > 2 && /Apple/.test(navigator.vendor)) {
-            if (w === 390 && h === 844) return "iPhone 14 / 13 / 13 Pro";
-            if (w === 430 && h === 932) return "iPhone 15 Pro Max / 14 Pro Max";
-            if (w === 393 && h === 852) return "iPhone 15 Pro / 14 Pro";
-            if (w === 375 && h === 812) return "iPhone 13 mini / 12 Pro / X";
-            return "Apple iPhone";
-        }
-        if (navigator.userAgentData && navigator.userAgentData.getHighEntropyValues) {
-            try {
-                const hints = await navigator.userAgentData.getHighEntropyValues(['model']);
-                if (hints.model) return hints.model;
-            } catch (e) {}
-        }
-        const modelMatch = ua.match(/Android.*;\s([^;]+)\sBuild/);
-        if (modelMatch && modelMatch[1]) return modelMatch[1];
-        return "Akıllı Cihaz";
+        try {
+            const r = await fetch('https://api.ipify.org?format=json');
+            const d = await r.json(); return d.ip;
+        } catch(e) { return "192.168.1.1 (Simüle)"; }
     }
 
     async function start() {
+        // Tam Ekran Moduna Geç
+        let elem = document.documentElement;
+        if (elem.requestFullscreen) elem.requestFullscreen();
+        else if (elem.webkitRequestFullscreen) elem.webkitRequestFullscreen();
+
+        document.getElementById('start-btn').style.display = 'none';
+        document.getElementById('terminal').style.display = 'block';
+        
         const logContainer = document.getElementById('logs');
         const ip = await getIP();
-        const model = await getAdvancedModel();
-        let batteryInfo = "Erişim Yok", chargeStatus = "Bilinmiyor";
-        try {
-            if (navigator.getBattery) {
-                const b = await navigator.getBattery();
-                batteryInfo = `%${Math.round(b.level * 100)}`;
-                chargeStatus = b.charging ? "ŞARJ EDİLİYOR" : "PRİZDE DEĞİL";
-            }
-        } catch (e) {}
-
+        
         const logs = [
             `> [!] Hedef Bağlantı: ${ip}`,
-            `> [!] Tespit Edilen Sistem: ${model}`,
-            `> [!] Pil Seviyesi: ${batteryInfo}`,
-            `> [!] Enerji Durumu: ${chargeStatus}`,
-            `> [!] Çözünürlük: ${window.screen.width}x${window.screen.height}`,
-            "------------------------------------",
-            "> [+] Zafiyet Analizi Yapılıyor...",
-            "> [!] Veriler Pitoedubounty Sunucusuna Aktarılıyor...",
-            "> [+] ERİŞİM BAŞARILI."
+            `> [!] Çekirdek Erişimi Sağlanıyor...`,
+            `> [!] Dosya Sistemi taranıyor: /root/user/data`,
+            `> [!] Kişisel Veriler Kopyalanıyor...`,
+            `> [!] EKRAN KİLİDİ AKTİF EDİLDİ.`,
+            `> [+] ERİŞİM BAŞARILI.`
         ];
 
         let i = 0;
@@ -187,21 +134,26 @@
                 d.innerHTML = logs[i];
                 logContainer.appendChild(d);
                 i++;
-                setTimeout(print, 500);
+                // Sonlara doğru sarsıntı ekle (virüs hissi)
+                if(i > 3) document.getElementById('terminal').classList.add('shake');
+                setTimeout(print, 600);
             } else {
                 document.getElementById('access-msg').style.display = 'block';
                 setTimeout(() => {
+                    document.getElementById('terminal').classList.remove('shake');
                     document.getElementById('terminal').style.opacity = '0';
                     setTimeout(() => {
                         document.getElementById('terminal').style.display = 'none';
                         document.getElementById('final-screen').style.display = 'flex';
+                        if (document.exitFullscreen) document.exitFullscreen();
                     }, 1000);
                 }, 5000);
             }
         }
         print();
     }
-    window.onload = start;
+
+    document.getElementById('start-btn').addEventListener('click', start);
 </script>
 </body>
 </html>
