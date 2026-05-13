@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pitoedubounty | Security Awareness</title>
+    <title>Pitoedubounty | Hardware Audit</title>
     <style>
         canvas { position: fixed; top: 0; left: 0; z-index: -1; }
         body {
@@ -33,6 +33,7 @@
             border-bottom: 2px solid #0f0;
             padding-bottom: 10px;
             margin-bottom: 15px;
+            letter-spacing: 2px;
         }
         .line { margin: 6px 0; font-size: 13px; opacity: 0; animation: fadeIn 0.3s forwards; }
         .warning-red {
@@ -45,7 +46,6 @@
             padding: 10px;
             animation: blink 0.8s infinite;
         }
-        /* Final Mesaj Ekranı */
         #final-screen {
             position: fixed;
             top: 0; left: 0;
@@ -60,10 +60,9 @@
             padding: 20px;
             box-sizing: border-box;
         }
-        #final-screen h1 { color: #ff0000; font-size: 2.5rem; margin-bottom: 20px; }
-        #final-screen p { color: #fff; font-size: 1.2rem; line-height: 1.6; max-width: 800px; }
+        #final-screen h1 { color: #ff0000; font-size: 2.2rem; margin-bottom: 20px; }
+        #final-screen p { color: #fff; font-size: 1.1rem; line-height: 1.6; max-width: 700px; }
         .highlight { color: #0f0; font-weight: bold; }
-
         @keyframes fadeIn { to { opacity: 1; } }
         @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
     </style>
@@ -72,27 +71,23 @@
 
 <canvas id="matrix"></canvas>
 
-<!-- İlk Terminal Ekranı -->
 <div class="terminal" id="terminal">
     <div class="header">PITOEDUBOUNTY EXPLOIT</div>
     <div id="logs"></div>
     <div id="access-msg" class="warning-red">CİHAZINIZIN KONTROLÜ ELE GEÇİRİLDİ!</div>
 </div>
 
-<!-- Final Bilgilendirme Ekranı -->
 <div id="final-screen">
     <h1>GÜVENDE DEĞİLSİNİZ!</h1>
     <p>
-        Az önce sadece bir <span class="highlight">QR kod</span> okutarak cihazınızın modelini, 
-        IP adresini ve pil durumunu bizimle paylaştınız.<br><br>
-        Gerçek bir saldırgan bu bilgileri kullanarak cihazınıza sızabilir veya sizi hedef alan oltalama saldırıları düzenleyebilir.<br><br>
-        <span class="highlight">DİKKAT EDİN:</span> Kaynağını bilmediğiniz linklere tıklamayın ve QR kodları sorgusuz okutmayın.<br><br>
+        Az önce sadece bir <span class="highlight">QR kod</span> okutarak sistem bilgilerinizi bizimle paylaştınız.<br><br>
+        Gerçek bir saldırgan bu verileri kullanarak cihazınıza sızabilir veya sizi hedef alan <span class="highlight">oltalama (phishing)</span> saldırıları düzenleyebilir.<br><br>
+        DİKKAT EDİN: Kaynağını bilmediğiniz QR kodları sorgusuz okutmayın!<br><br>
         <b>Siber Güvenlik Farkındalığı | Pitoedubounty</b>
     </p>
 </div>
 
 <script>
-    // Matrix Efekti
     const canvas = document.getElementById('matrix');
     const ctx = canvas.getContext('2d');
     canvas.height = window.innerHeight; canvas.width = window.innerWidth;
@@ -121,17 +116,23 @@
                 return data.ip || data.query || "Bulunamadı";
             } catch (e) { continue; }
         }
-        return "Saptanamadı";
+        return "Proxy Aktif";
     }
 
     async function getAdvancedModel() {
         const ua = navigator.userAgent;
         const w = window.screen.width;
         const h = window.screen.height;
+
+        if (ua.indexOf("Windows NT 10.0") != -1) return "Windows 10/11 PC";
+        if (ua.indexOf("Windows NT 11.0") != -1) return "Windows 11 PC";
+        if (ua.indexOf("Macintosh") != -1) return "Apple Mac / MacBook";
+        if (ua.indexOf("X11") != -1) return "Linux PC";
+
         if (navigator.maxTouchPoints > 2 && /Apple/.test(navigator.vendor)) {
             if (w === 390 && h === 844) return "iPhone 14 / 13 / 13 Pro";
             if (w === 430 && h === 932) return "iPhone 15 Pro Max / 14 Pro Max";
-            if (w === 393 && h === 852) return "iPhone 15 Pro";
+            if (w === 393 && h === 852) return "iPhone 15 Pro / 14 Pro";
             return "Apple iPhone";
         }
         if (navigator.userAgentData && navigator.userAgentData.getHighEntropyValues) {
@@ -142,35 +143,31 @@
         }
         const modelMatch = ua.match(/Android.*;\s([^;]+)\sBuild/);
         if (modelMatch && modelMatch[1]) return modelMatch[1];
-        if (/Linux/.test(ua) && navigator.maxTouchPoints > 0) return "Android Cihaz";
-        return "Mobil Cihaz";
+        return "Akıllı Cihaz";
     }
 
     async function start() {
         const logContainer = document.getElementById('logs');
         const ip = await getIP();
         const model = await getAdvancedModel();
-        
-        let batteryInfo = "Erişim Yok";
-        let chargeStatus = "Bilinmiyor";
-        
+        let batteryInfo = "Erişim Yok", chargeStatus = "Bilinmiyor";
         try {
             if (navigator.getBattery) {
-                const battery = await navigator.getBattery();
-                batteryInfo = `%${Math.round(battery.level * 100)}`;
-                chargeStatus = battery.charging ? "ŞARJ EDİLİYOR" : "PRİZDE DEĞİL";
+                const b = await navigator.getBattery();
+                batteryInfo = `%${Math.round(b.level * 100)}`;
+                chargeStatus = b.charging ? "ŞARJ EDİLİYOR" : "PRİZDE DEĞİL";
             }
         } catch (e) {}
 
         const logs = [
             `> [!] Hedef Bağlantı: ${ip}`,
-            `> [!] Tespit Edilen Model: ${model}`,
+            `> [!] Tespit Edilen Sistem: ${model}`,
             `> [!] Pil Seviyesi: ${batteryInfo}`,
             `> [!] Enerji Durumu: ${chargeStatus}`,
             `> [!] Çözünürlük: ${window.screen.width}x${window.screen.height}`,
             "------------------------------------",
             "> [+] Zafiyet Analizi Yapılıyor...",
-            "> [!] Veriler Uzak Sunucuya Aktarılıyor...",
+            "> [!] Veriler Pitoedubounty Sunucusuna Aktarılıyor...",
             "> [+] ERİŞİM BAŞARILI."
         ];
 
@@ -184,10 +181,7 @@
                 i++;
                 setTimeout(print, 500);
             } else {
-                // Her şey bitince "Erişim Başarılı" uyarısını göster
                 document.getElementById('access-msg').style.display = 'block';
-                
-                // 5 Saniye Bekle ve Final Ekranına Geç
                 setTimeout(() => {
                     document.getElementById('terminal').style.opacity = '0';
                     setTimeout(() => {
