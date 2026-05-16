@@ -1,177 +1,475 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pitoedubounty | Security Audit</title>
-    <style>
-        canvas { position: fixed; top: 0; left: 0; z-index: -1; }
-        body {
-            background-color: #000; color: #0f0;
-            font-family: 'Courier New', Courier, monospace;
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            height: 100vh; margin: 0; overflow: hidden;
-        }
-        /* Başlangıç Butonu */
-        #start-btn {
-            padding: 15px 30px; font-size: 1.2rem; color: #0f0; background: transparent;
-            border: 2px solid #0f0; cursor: pointer; font-family: inherit;
-            box-shadow: 0 0 15px #0f0; animation: blink 1s infinite;
-        }
-        #start-btn:hover { background: #0f0; color: #000; }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SİSTEM UYARISI</title>
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Bebas+Neue&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --red: #ff2020; --green: #00ff88;
+      --dark: #080808; --dim: #111;
+      --border: #1e1e1e; --text: #e0e0e0;
+      --mono: 'Share Tech Mono', monospace;
+    }
+    body { background: var(--dark); color: var(--text); font-family: var(--mono); min-height: 100vh; overflow-x: hidden; }
 
-        .terminal {
-            width: 95%; max-width: 600px; border: 2px solid #0f0; padding: 20px;
-            box-shadow: 0 0 25px rgba(0, 255, 0, 0.5); background: rgba(0, 10, 0, 0.94);
-            display: none; transition: opacity 1s;
-        }
-        .header { text-align: center; font-weight: bold; border-bottom: 2px solid #0f0; padding-bottom: 10px; margin-bottom: 15px; }
-        .line { margin: 6px 0; font-size: 13px; opacity: 0; animation: fadeIn 0.3s forwards; }
-        .warning-red { color: #ff0000; font-weight: bold; text-align: center; margin-top: 15px; display: none; border: 1px solid #ff0000; padding: 10px; animation: blink 0.8s infinite; }
-        
-        #final-screen {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: #000; display: none; flex-direction: column; align-items: center; justify-content: center;
-            text-align: center; z-index: 100; padding: 30px; box-sizing: border-box;
-        }
-        #final-screen h1 { color: #ff0000; font-size: 2rem; margin-bottom: 20px; }
-        #final-screen p { color: #fff; font-size: 1.05rem; line-height: 1.6; max-width: 750px; }
-        .highlight { color: #0f0; font-weight: bold; }
-        @keyframes fadeIn { to { opacity: 1; } }
-        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
-    </style>
+    /* PHASE 1 */
+    #phase-hack {
+      position: fixed; inset: 0; background: #000;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      z-index: 1000; padding: 2rem;
+    }
+    #phase-hack.hidden { display: none; }
+
+    .scanline {
+      position: fixed; inset: 0; pointer-events: none;
+      background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.15) 2px, rgba(0,0,0,0.15) 4px);
+      z-index: 9999;
+    }
+
+    .glitch-wrapper { text-align: center; animation: shake 0.3s infinite; }
+    @keyframes shake {
+      0%,100% { transform: translate(0,0); } 20% { transform: translate(-3px,1px); }
+      40% { transform: translate(3px,-1px); } 60% { transform: translate(-2px,2px); } 80% { transform: translate(2px,-2px); }
+    }
+    .hack-label { font-family: var(--mono); font-size: clamp(0.65rem,2vw,0.85rem); color: var(--red); letter-spacing: 0.3em; margin-bottom: 1rem; opacity: 0.8; }
+    .hack-title {
+      font-family: 'Bebas Neue', sans-serif; font-size: clamp(3rem,14vw,8rem);
+      color: var(--red); line-height: 0.9; position: relative;
+      text-shadow: 0 0 20px rgba(255,32,32,0.8), 0 0 60px rgba(255,32,32,0.4), 4px 0 0 rgba(0,255,136,0.3);
+    }
+    .hack-title::before {
+      content: attr(data-text); position: absolute; inset: 0;
+      color: var(--green); clip-path: inset(40% 0 50% 0);
+      animation: glitch-clip 1.5s infinite steps(1); opacity: 0.6;
+    }
+    @keyframes glitch-clip {
+      0%   { clip-path: inset(10% 0 80% 0); transform: translate(-4px); }
+      20%  { clip-path: inset(60% 0 10% 0); transform: translate(4px); }
+      40%  { clip-path: inset(30% 0 50% 0); transform: translate(-2px); }
+      60%  { clip-path: inset(70% 0 20% 0); transform: translate(3px); }
+      80%  { clip-path: inset(20% 0 70% 0); transform: translate(-3px); }
+      100% { clip-path: inset(50% 0 30% 0); transform: translate(0); }
+    }
+
+    .terminal-box {
+      margin-top: 1.5rem; width: min(520px,92vw);
+      background: rgba(0,255,136,0.04); border: 1px solid rgba(0,255,136,0.2);
+      padding: 1.2rem 1.5rem; text-align: left;
+    }
+    .terminal-line {
+      color: var(--green); font-size: clamp(0.6rem,1.9vw,0.78rem);
+      line-height: 1.9; opacity: 0; transition: opacity 0.2s;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .terminal-line.show { opacity: 1; }
+    .t-red { color: var(--red) !important; }
+
+    .cursor { display: inline-block; width: 8px; height: 1em; background: var(--green); animation: blink 0.7s infinite; vertical-align: bottom; }
+    @keyframes blink { 50% { opacity: 0; } }
+
+    .progress-bar-wrap { margin-top: 1.2rem; width: min(520px,92vw); }
+    .progress-label { font-size: 0.7rem; color: var(--red); letter-spacing: 0.2em; margin-bottom: 0.4rem; }
+    .progress-track { height: 6px; background: rgba(255,32,32,0.15); border: 1px solid rgba(255,32,32,0.3); }
+    .progress-fill { height: 100%; background: var(--red); box-shadow: 0 0 10px var(--red); width: 0%; transition: width 0.1s linear; }
+
+    /* PHASE 2 */
+    #phase-info { display: none; opacity: 0; transition: opacity 0.8s ease; }
+    #phase-info.visible { display: block; opacity: 1; }
+
+    /* PANIC BANNER */
+    .panic-banner {
+      background: linear-gradient(135deg, #0d1a0d 0%, #0a0a0a 100%);
+      border-bottom: 1px solid rgba(0,255,136,0.15);
+      padding: 3.5rem 2rem; text-align: center;
+    }
+    .panic-emoji { font-size: 3rem; margin-bottom: 1rem; }
+    .panic-title {
+      font-family: 'Bebas Neue', sans-serif; font-size: clamp(2rem,7vw,4rem);
+      color: var(--green); line-height: 1; margin-bottom: 1.5rem;
+      text-shadow: 0 0 30px rgba(0,255,136,0.3);
+    }
+    .panic-text {
+      font-family: 'DM Sans', sans-serif; font-size: clamp(0.9rem,2.5vw,1.05rem);
+      color: rgba(255,255,255,0.7); max-width: 680px; margin: 0 auto 0;
+      line-height: 1.85;
+    }
+    .panic-text strong { color: #fff; }
+
+    /* DATA CARDS */
+    .data-section { max-width: 860px; margin: 0 auto; padding: 2.5rem 2rem; border-bottom: 1px solid var(--border); }
+    .data-section-title { font-family: var(--mono); font-size: 0.62rem; letter-spacing: 0.35em; color: var(--red); margin-bottom: 1.2rem; text-transform: uppercase; }
+    .data-grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(190px,1fr));
+      gap: 1px; background: var(--border); border: 1px solid var(--border);
+    }
+    .data-card { background: #0e0e0e; padding: 1.1rem; }
+    .data-card-label { font-family: var(--mono); font-size: 0.58rem; letter-spacing: 0.25em; color: rgba(255,255,255,0.3); text-transform: uppercase; margin-bottom: 0.4rem; }
+    .data-card-value { font-family: var(--mono); font-size: clamp(0.75rem,1.8vw,0.9rem); color: var(--green); word-break: break-all; }
+    .data-card-value.loading { color: rgba(0,255,136,0.3); animation: pulse 1s infinite; }
+    @keyframes pulse { 50% { opacity: 0.3; } }
+
+    /* TIPS in panic section */
+    .tip-list { margin-top: 2rem; display: flex; flex-direction: column; gap: 0; }
+    .tip-item { display: grid; grid-template-columns: 3rem 1fr; gap: 1rem; align-items: start; padding: 1.1rem 0; border-bottom: 1px solid var(--border); }
+    .tip-num { font-family: var(--mono); font-size: 0.7rem; color: var(--green); opacity: 0.5; padding-top: 0.1rem; }
+    .tip-text { font-family: 'DM Sans', sans-serif; font-size: 0.9rem; color: rgba(255,255,255,0.65); line-height: 1.6; }
+    .tip-text strong { color: #fff; font-weight: 500; }
+
+    .motto { font-family: 'DM Sans', sans-serif; font-size: 0.85rem; color: rgba(255,255,255,0.38); margin-top: 2rem; text-align: center; }
+    .motto strong { color: var(--green); }
+    .brand { font-family: var(--mono); font-size: 0.62rem; color: rgba(255,255,255,0.18); margin-top: 0.6rem; text-align: center; letter-spacing: 0.3em; }
+
+    /* MORE INFO */
+    .section { max-width: 860px; margin: 0 auto; padding: 3rem 2rem; border-bottom: 1px solid var(--border); }
+    .section-tag { font-family: var(--mono); font-size: 0.65rem; letter-spacing: 0.4em; color: var(--green); margin-bottom: 1rem; text-transform: uppercase; }
+    .section-title { font-family: 'Bebas Neue', sans-serif; font-size: clamp(1.8rem,5vw,3rem); color: #fff; margin-bottom: 1.5rem; line-height: 1; }
+
+    .risk-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px,1fr)); gap: 1px; background: var(--border); border: 1px solid var(--border); margin-top: 2rem; }
+    .risk-card { background: var(--dim); padding: 1.4rem; transition: background 0.2s; }
+    .risk-card:hover { background: #161616; }
+    .risk-icon { font-size: 1.3rem; margin-bottom: 0.7rem; }
+    .risk-card h3 { font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.15em; color: var(--red); margin-bottom: 0.5rem; text-transform: uppercase; }
+    .risk-card p { font-family: 'DM Sans', sans-serif; font-size: 0.82rem; color: rgba(255,255,255,0.5); line-height: 1.6; }
+
+    .inet-grid { margin-top: 2rem; display: grid; grid-template-columns: repeat(auto-fill, minmax(195px,1fr)); gap: 1rem; }
+    .inet-card { border: 1px solid var(--border); padding: 1.2rem; position: relative; overflow: hidden; }
+    .inet-card::after { content: ''; position: absolute; bottom: 0; left: 0; width: 0; height: 2px; background: var(--green); transition: width 0.3s ease; }
+    .inet-card:hover::after { width: 100%; }
+    .inet-card h3 { font-family: var(--mono); font-size: 0.68rem; letter-spacing: 0.1em; color: var(--green); margin-bottom: 0.6rem; text-transform: uppercase; }
+    .inet-card p { font-family: 'DM Sans', sans-serif; font-size: 0.8rem; color: rgba(255,255,255,0.43); line-height: 1.6; }
+
+    .cta { text-align: center; padding: 5rem 2rem; background: #0a0a0a; }
+    .cta-title { font-family: 'Bebas Neue', sans-serif; font-size: clamp(2rem,7vw,4rem); color: #fff; margin-bottom: 1rem; }
+    .cta-title span { color: var(--green); }
+    .cta-sub { font-family: 'DM Sans', sans-serif; font-size: 0.9rem; color: rgba(255,255,255,0.35); margin-bottom: 2rem; }
+    .cta-badge { display: inline-block; font-family: var(--mono); font-size: 0.68rem; letter-spacing: 0.3em; color: var(--green); border: 1px solid rgba(0,255,136,0.4); padding: 0.6rem 1.5rem; }
+
+    body::after {
+      content: ''; position: fixed; inset: 0; pointer-events: none; opacity: 0.025;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      background-size: 200px; z-index: 9998;
+    }
+  </style>
 </head>
-<body oncontextmenu="return false;">
+<body>
 
-<canvas id="matrix"></canvas>
+<div class="scanline"></div>
 
-<button id="start-btn">SİSTEMİ TARAMAYI BAŞLAT</button>
+<!-- PHASE 1: HACK SCREEN -->
+<div id="phase-hack">
+  <div class="glitch-wrapper">
+    <div class="hack-label">⚠ SİSTEM UYARISI ⚠</div>
+    <div class="hack-title" data-text="HACKLENDINIZ">HACKLENDINIZ</div>
+  </div>
 
-<div class="terminal" id="terminal">
-    <div class="header">PITOEDUBOUNTY CORE EXPLOIT</div>
-    <div id="logs"></div>
-    <div id="access-msg" class="warning-red">CİHAZINIZIN KONTROLÜ ELE GEÇİRİLDİ!</div>
+  <div class="terminal-box">
+    <div class="terminal-line" id="t1">&gt; Bağlantı kuruldu. Hedef tespit edildi...</div>
+    <div class="terminal-line" id="t2">&gt; IP Adresi &nbsp;&nbsp;: <span class="t-red" id="term-ip">taranıyor...</span></div>
+    <div class="terminal-line" id="t3">&gt; Cihaz &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: <span class="t-red" id="term-device">analiz ediliyor...</span></div>
+    <div class="terminal-line" id="t4">&gt; Pil Durumu : <span class="t-red" id="term-battery">okunuyor...</span></div>
+    <div class="terminal-line" id="t5">&gt; Ekran &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: <span class="t-red" id="term-screen">—</span> &nbsp;| Dil: <span class="t-red" id="term-lang">—</span></div>
+    <div class="terminal-line" id="t6">&gt; VERİ AKTARIMI BAŞLADI <span class="t-red">██████████</span> <span class="cursor"></span></div>
+  </div>
+
+  <div class="progress-bar-wrap">
+    <div class="progress-label">VERİ AKTARIMI: <span id="pct">0</span>%</div>
+    <div class="progress-track"><div class="progress-fill" id="pfill"></div></div>
+  </div>
 </div>
 
-<div id="final-screen">
-    <h1>PANİK YAPMAYIN, BİZ DOSTUZ!</h1>
-    <p>
-        Az önce sadece bir <span class="highlight">QR kod</span> okutarak; IP adresiniz, cihaz modeliniz ve pil durumunuz gibi teknik bilgileri bizimle paylaştınız. Biz sadece bu <span class="highlight">masum verileri</span> aldık.<br><br>
-        
-        Ancak gerçek bir saldırgan, bu yöntemle sizi sahte bir giriş sayfasına yönlendirerek <span class="highlight">şifrelerinizi, banka bilgilerinizi</span> veya <span class="highlight">kişisel verilerinizi</span> çalabilirdi.<br><br>
+<!-- PHASE 2: AWARENESS -->
+<div id="phase-info">
 
-        Sadece QR kodlar değil, girdiğiniz her web sitesi güvenliğiniz için bir risk taşıyabilir. <span class="highlight">Web güvenliğiniz için:</span><br>
-        • Bilmediğiniz kaynaklardan gelen linklere tıklamayın.<br>
-        • "HTTPS" protokolü olmayan sitelerde veri paylaşmayın.<br>
-        • QR kodların arkasındaki URL'yi kontrol etmeden işlem yapmayın.<br><br>
-
-        <b>Unutmayın: Dijital dünyada en güçlü kalkanınız farkındalığınızdır.</b><br><br>
-        <span class="highlight">Siber Güvenlik Farkındalığı | Pitoedubounty</span>
+  <!-- PANİK YAPMAYIN -->
+  <div class="panic-banner">
+    <div class="panic-emoji">🤝</div>
+    <div class="panic-title">PANİK YAPMAYIN, BİZ DOSTUZ!</div>
+    <p class="panic-text">
+      Az önce sadece bir QR kod okutarak; <strong>IP adresiniz, cihaz modeliniz ve pil durumunuz</strong> gibi teknik bilgileri bizimle paylaştınız.
+      Biz sadece bu masum verileri aldık. Ancak <strong>gerçek bir saldırgan</strong>, bu yöntemle sizi sahte bir giriş sayfasına yönlendirerek
+      şifrelerinizi, banka bilgilerinizi veya kişisel verilerinizi çalabilirdi.
+      <br><br>
+      Sadece QR kodlar değil, girdiğiniz <strong>her web sitesi</strong> güvenliğiniz için bir risk taşıyabilir.
     </p>
+  </div>
+
+  <!-- TOPLANAN VERİLER -->
+  <div class="data-section">
+    <div class="data-section-title">⚠ Az önce bizimle paylaştığınız veriler — gerçek saldırgan bunları kötüye kullanırdı</div>
+    <div class="data-grid">
+      <div class="data-card"><div class="data-card-label">IP Adresi</div><div class="data-card-value loading" id="info-ip">yükleniyor...</div></div>
+      <div class="data-card"><div class="data-card-label">Cihaz / İşletim Sistemi</div><div class="data-card-value" id="info-device">—</div></div>
+      <div class="data-card"><div class="data-card-label">Tarayıcı</div><div class="data-card-value" id="info-browser">—</div></div>
+      <div class="data-card"><div class="data-card-label">Pil Durumu</div><div class="data-card-value" id="info-battery">—</div></div>
+      <div class="data-card"><div class="data-card-label">Ekran Çözünürlüğü</div><div class="data-card-value" id="info-screen">—</div></div>
+      <div class="data-card"><div class="data-card-label">Sistem Dili</div><div class="data-card-value" id="info-lang">—</div></div>
+      <div class="data-card"><div class="data-card-label">Platform</div><div class="data-card-value" id="info-platform">—</div></div>
+      <div class="data-card"><div class="data-card-label">Zaman Dilimi</div><div class="data-card-value" id="info-tz">—</div></div>
+    </div>
+  </div>
+
+  <!-- WEB GÜVENLİĞİ İPUÇLARI -->
+  <div class="data-section">
+    <div class="data-section-title">// Web Güvenliğiniz İçin</div>
+    <div class="tip-list">
+      <div class="tip-item">
+        <div class="tip-num">01</div>
+        <div class="tip-text"><strong>Bilmediğiniz kaynaklardan gelen linklere tıklamayın.</strong> Tanımadığınız kişilerden veya güvenmediğiniz platformlardan gelen bağlantılar sizi tehlikeli sitelere yönlendirebilir.</div>
+      </div>
+      <div class="tip-item">
+        <div class="tip-num">02</div>
+        <div class="tip-text"><strong>"HTTPS" protokolü olmayan sitelerde veri paylaşmayın.</strong> Adres çubuğunda kilit simgesi yoksa o site şifreli değildir; bilgileriniz açıkta kalabilir.</div>
+      </div>
+      <div class="tip-item">
+        <div class="tip-num">03</div>
+        <div class="tip-text"><strong>QR kodların arkasındaki URL'yi kontrol etmeden işlem yapmayın.</strong> QR taradıktan sonra bağlantıya tıklamadan önce adresi okuyun — sahte siteler çok benzer görünebilir.</div>
+      </div>
+    </div>
+    <p class="motto">Unutmayın: Dijital dünyada en güçlü kalkanınız <strong>farkındalığınızdır.</strong></p>
+    <p class="brand">Siber Güvenlik Farkındalığı | Pitoedubounty</p>
+  </div>
+
+  <!-- QR TEHLİKELERİ -->
+  <div class="section">
+    <div class="section-tag">// 01 — QR Kod Tehlikeleri</div>
+    <h2 class="section-title">QR Okuturken<br>Ne Olabilir?</h2>
+    <div class="risk-grid">
+      <div class="risk-card"><div class="risk-icon">🔗</div><h3>Sahte URL Yönlendirme</h3><p>QR sizi gerçek gibi görünen ama sahte bir siteye yönlendirebilir. Şifrenizi girerseniz çalınır.</p></div>
+      <div class="risk-card"><div class="risk-icon">📲</div><h3>Zararlı Uygulama İndirme</h3><p>Bazı QR kodlar tarayıcı üzerinden zararlı yazılım indirme girişiminde bulunur.</p></div>
+      <div class="risk-card"><div class="risk-icon">📡</div><h3>Wi-Fi Tuzağı</h3><p>QR cihazınızı saldırganın kontrol ettiği sahte bir ağa otomatik bağlayabilir.</p></div>
+      <div class="risk-card"><div class="risk-icon">💬</div><h3>SMS / Arama Tetikleme</h3><p>Cihazınız haberiniz olmadan ücretli bir numarayı arayabilir veya mesaj gönderebilir.</p></div>
+      <div class="risk-card"><div class="risk-icon">🗺️</div><h3>Konum Sızdırma</h3><p>Açılan sayfa konum izninizi isteyebilir; izin verirseniz nerede olduğunuz bilinir.</p></div>
+      <div class="risk-card"><div class="risk-icon">🍪</div><h3>İzleme & Profilleme</h3><p>Tek bir tıklama cihazınızı ve davranışlarınızı uzak sunuculara bildirebilir.</p></div>
+    </div>
+  </div>
+
+  <!-- İNTERNET GÜVENLİĞİ -->
+  <div class="section">
+    <div class="section-tag">// 02 — İnternet Güvenliği</div>
+    <h2 class="section-title">İnternette<br>Güvende Kal</h2>
+    <div class="inet-grid">
+      <div class="inet-card"><h3>🔒 HTTPS Zorunlu</h3><p>Kilit simgesi olmayan sitelere şifre veya kişisel bilgi girme.</p></div>
+      <div class="inet-card"><h3>🔑 Güçlü Şifre</h3><p>Her hesap için farklı, en az 12 karakterlik şifre kullan. Bitwarden gibi bir yönetici kullan.</p></div>
+      <div class="inet-card"><h3>📱 2FA Aktif Et</h3><p>Şifren çalınsa bile iki faktörlü doğrulama hesabını korur.</p></div>
+      <div class="inet-card"><h3>📧 Phishing'e Dikkat</h3><p>"Hesabın askıya alındı" gibi panik yaratan e-postalardaki linklere tıklama.</p></div>
+      <div class="inet-card"><h3>📶 Ortak Wi-Fi</h3><p>Açık ağlarda banka veya şifre işlemi yapma. VPN kullanmak riski azaltır.</p></div>
+      <div class="inet-card"><h3>🔄 Güncelleme Yap</h3><p>Telefon ve uygulama güncellemeleri güvenlik açıklarını kapatır.</p></div>
+      <div class="inet-card"><h3>🧩 Uygulama İzinleri</h3><p>Bir fener uygulaması neden rehberine erişmek istesin? İzinleri düzenli kontrol et.</p></div>
+      <div class="inet-card"><h3>💾 Yedek Al</h3><p>Fidye yazılımı verilerini şifreleyebilir. Önemli dosyaları harici yere yedekle.</p></div>
+    </div>
+  </div>
+
+  <!-- CTA -->
+  <div class="cta">
+    <div class="cta-title">Bilinç <span>en iyi</span> virüs koruma.</div>
+    <div class="cta-sub">Bu bilgileri arkadaşlarınla paylaş. Güvenli internet herkesi korur.</div>
+    <div class="cta-badge">🛡 Siber Güvenlik Farkındalığı | Pitoedubounty</div>
+  </div>
+
 </div>
 
 <script>
-    const canvas = document.getElementById('matrix');
-    const ctx = canvas.getContext('2d');
-    canvas.height = window.innerHeight; canvas.width = window.innerWidth;
-    const chars = "10"; const fontSize = 16;
-    const columns = canvas.width / fontSize;
-    const drops = Array(Math.floor(columns)).fill(1);
-    function draw() {
-        ctx.fillStyle = "rgba(0, 0, 0, 0.05)"; ctx.fillRect(0, 0, canvas.width, canvas.height);
-        ctx.fillStyle = "#0f0"; ctx.font = fontSize + "px arial";
-        drops.forEach((y, i) => {
-            const text = chars[Math.floor(Math.random() * chars.length)];
-            ctx.fillText(text, i * fontSize, y * fontSize);
-            if (y * fontSize > canvas.height && Math.random() > 0.975) drops[i] = 0;
-            drops[i]++;
-        });
-    }
-    setInterval(draw, 35);
+// ── VERİ TOPLAMA ──
+const deviceData = {};
 
-    document.onkeydown = function(e) {
-        if (e.keyCode == 123 || (e.ctrlKey && e.shiftKey && e.keyCode == 73)) return false;
-    };
+// Kod → Marka model adı eşleştirmesi (yaygın cihazlar)
+const MODEL_MAP = {
+  // Samsung Galaxy S serisi
+  'SM-S928':['Samsung Galaxy S24 Ultra'],'SM-S926':['Samsung Galaxy S24+'],'SM-S921':['Samsung Galaxy S24'],
+  'SM-S918':['Samsung Galaxy S23 Ultra'],'SM-S916':['Samsung Galaxy S23+'],'SM-S911':['Samsung Galaxy S23'],
+  'SM-S908':['Samsung Galaxy S22 Ultra'],'SM-S906':['Samsung Galaxy S22+'],'SM-S901':['Samsung Galaxy S22'],
+  'SM-G998':['Samsung Galaxy S21 Ultra'],'SM-G996':['Samsung Galaxy S21+'],'SM-G991':['Samsung Galaxy S21'],
+  'SM-G988':['Samsung Galaxy S20 Ultra'],'SM-G986':['Samsung Galaxy S20+'],'SM-G981':['Samsung Galaxy S20'],
+  'SM-G975':['Samsung Galaxy S10+'],'SM-G973':['Samsung Galaxy S10'],'SM-G970':['Samsung Galaxy S10e'],
+  // Samsung Galaxy A serisi
+  'SM-A556':['Samsung Galaxy A55'],'SM-A546':['Samsung Galaxy A54'],'SM-A536':['Samsung Galaxy A53'],
+  'SM-A526':['Samsung Galaxy A52'],'SM-A516':['Samsung Galaxy A51'],
+  'SM-A356':['Samsung Galaxy A35'],'SM-A346':['Samsung Galaxy A34'],'SM-A336':['Samsung Galaxy A33'],
+  'SM-A256':['Samsung Galaxy A25'],'SM-A245':['Samsung Galaxy A24'],
+  'SM-A135':['Samsung Galaxy A13'],'SM-A125':['Samsung Galaxy A12'],
+  // Samsung Galaxy Z serisi
+  'SM-F946':['Samsung Galaxy Z Fold 5'],'SM-F936':['Samsung Galaxy Z Fold 4'],'SM-F926':['Samsung Galaxy Z Fold 3'],
+  'SM-F731':['Samsung Galaxy Z Flip 5'],'SM-F721':['Samsung Galaxy Z Flip 4'],'SM-F711':['Samsung Galaxy Z Flip 3'],
+  // Samsung Galaxy Note
+  'SM-N986':['Samsung Galaxy Note 20 Ultra'],'SM-N981':['Samsung Galaxy Note 20'],
+  'SM-N976':['Samsung Galaxy Note 10+'],'SM-N970':['Samsung Galaxy Note 10'],
+  // Xiaomi
+  '2311DRK48G':['Xiaomi 14 Ultra'],'23127PN0CC':['Xiaomi 13 Pro'],'2210132G':['Xiaomi 12 Pro'],
+  '220333QNY':['Xiaomi Redmi Note 12 Pro'],'21091116AI':['Xiaomi Redmi Note 10 Pro'],
+  'M2007J3SG':['Xiaomi Redmi Note 9S'],'M2004J19C':['Xiaomi Redmi Note 9'],
+  // POCO
+  '23049PCD8G':['POCO X6 Pro'],'22041216G':['POCO X4 Pro'],'M2012K11AG':['POCO X3 Pro'],
+  // Realme
+  'RMX3761':['Realme 11 Pro+'],'RMX3521':['Realme 9 Pro+'],
+  // OnePlus
+  'CPH2583':['OnePlus 12'],'CPH2449':['OnePlus 11'],'CPH2423':['OnePlus 10 Pro'],
+  // Huawei
+  'ELS-NX9':['Huawei P40 Pro'],'VOG-L29':['Huawei P30 Pro'],
+  // Google Pixel
+  'GP4BC':['Google Pixel 8 Pro'],'GC3VE':['Google Pixel 8'],
+  'GQML3':['Google Pixel 7 Pro'],'GVU6C':['Google Pixel 7'],
+  // ASUS
+  'ASUS_AI2302':['ASUS ROG Phone 7'],'ASUS_AI2201':['ASUS Zenfone 9'],
+};
 
-    async function getIP() {
-        try {
-            const r = await fetch('https://api.ipify.org?format=json');
-            const d = await r.json(); return d.ip;
-        } catch(e) { return "Proxy/VPN Aktif"; }
-    }
+function friendlyModel(rawModel) {
+  if (!rawModel) return null;
+  const upper = rawModel.toUpperCase().trim();
+  // Tam eşleşme
+  for (const key of Object.keys(MODEL_MAP)) {
+    if (upper.startsWith(key.toUpperCase())) return MODEL_MAP[key][0];
+  }
+  // Kısmi eşleşme (kod ortada geçiyorsa)
+  for (const key of Object.keys(MODEL_MAP)) {
+    if (upper.includes(key.toUpperCase())) return MODEL_MAP[key][0];
+  }
+  return null; // Bulunamazsa ham modeli kullan
+}
 
-    async function getAdvancedModel() {
-        const ua = navigator.userAgent;
-        const w = window.screen.width;
-        const h = window.screen.height;
+function parseUA() {
+  const ua = navigator.userAgent;
+  let os = 'Bilinmiyor', browser = 'Bilinmiyor', rawModel = null;
 
-        if (ua.indexOf("Windows NT 10.0") != -1) return "Windows 10/11 PC";
-        if (ua.indexOf("Macintosh") != -1) return "Apple Mac / MacBook";
-        if (ua.indexOf("X11") != -1) return "Linux PC";
+  if (/Android/i.test(ua)) {
+    const v = ua.match(/Android\s([\d.]+)/);
+    const m = ua.match(/;\s*(.+?)\s*Build/);
+    rawModel = m ? m[1].trim() : null;
+    const friendly = friendlyModel(rawModel);
+    const modelStr = friendly || rawModel || '';
+    os = 'Android ' + (v ? v[1] : '') + (modelStr ? ' — ' + modelStr : '');
+  } else if (/iPhone|iPad|iPod/i.test(ua)) {
+    const v = ua.match(/OS\s([\d_]+)/);
+    const dev = /iPad/i.test(ua) ? 'iPad' : 'iPhone';
+    os = dev + ' iOS ' + (v ? v[1].replace(/_/g,'.') : '');
+  } else if (/Windows NT/i.test(ua)) {
+    const v = ua.match(/Windows NT\s([\d.]+)/);
+    const map = {'10.0':'10/11','6.3':'8.1','6.2':'8','6.1':'7'};
+    os = 'Windows ' + (v ? (map[v[1]] || v[1]) : '');
+  } else if (/Mac OS X/i.test(ua)) {
+    const v = ua.match(/Mac OS X\s([\d_]+)/);
+    os = 'macOS ' + (v ? v[1].replace(/_/g,'.') : '');
+  } else if (/Linux/i.test(ua)) os = 'Linux';
 
-        if (navigator.maxTouchPoints > 2 && /Apple/.test(navigator.vendor)) {
-            if (w === 390 && h === 844) return "iPhone 14 / 13 / 13 Pro";
-            if (w === 430 && h === 932) return "iPhone 15 Pro Max / 14 Pro Max";
-            if (w === 393 && h === 852) return "iPhone 15 Pro";
-            return "Apple iPhone";
-        }
-        const modelMatch = ua.match(/Android.*;\s([^;]+)\sBuild/);
-        if (modelMatch && modelMatch[1]) return modelMatch[1];
-        return "Akıllı Cihaz";
-    }
+  if (/SamsungBrowser/i.test(ua)) browser = 'Samsung Internet';
+  else if (/OPR|Opera/i.test(ua)) browser = 'Opera';
+  else if (/Edg/i.test(ua)) browser = 'Microsoft Edge';
+  else if (/Chrome/i.test(ua)) { const v = ua.match(/Chrome\/([\d]+)/); browser = 'Chrome ' + (v?v[1]:''); }
+  else if (/Firefox/i.test(ua)) { const v = ua.match(/Firefox\/([\d]+)/); browser = 'Firefox ' + (v?v[1]:''); }
+  else if (/Safari/i.test(ua)) browser = 'Safari';
 
-    async function start() {
-        // Tam Ekran
-        let elem = document.documentElement;
-        if (elem.requestFullscreen) elem.requestFullscreen();
-        else if (elem.webkitRequestFullscreen) elem.webkitRequestFullscreen();
+  return { os, browser, rawModel };
+}
 
-        document.getElementById('start-btn').style.display = 'none';
-        document.getElementById('terminal').style.display = 'block';
-        
-        const ip = await getIP();
-        const model = await getAdvancedModel();
-        let batteryInfo = "%84"; // Fallback
-        try {
-            if (navigator.getBattery) {
-                const b = await navigator.getBattery();
-                batteryInfo = `%${Math.round(b.level * 100)}`;
-            }
-        } catch (e) {}
+// userAgentData API'si varsa (Chrome/Android modern) daha temiz model alır
+async function getDeviceInfo() {
+  let result = parseUA();
 
-        const logs = [
-            `> [!] Hedef Bağlantı: ${ip}`,
-            `> [!] Tespit Edilen Sistem: ${model}`,
-            `> [!] Pil Seviyesi: ${batteryInfo}`,
-            `> [!] Dosya Sistemi taranıyor: /root/user/data`,
-            `> [!] Kriptografik anahtarlar kopyalanıyor...`,
-            `> [+] ERİŞİM BAŞARILI.`
-        ];
+  if (navigator.userAgentData && navigator.userAgentData.getHighEntropyValues) {
+    try {
+      const h = await navigator.userAgentData.getHighEntropyValues(['model','platform','platformVersion','fullVersionList']);
+      if (h.model && h.model.trim() !== '') {
+        const friendly = friendlyModel(h.model);
+        const modelName = friendly || h.model;
+        const platform = h.platform || '';
+        const pv = h.platformVersion || '';
+        result.os = platform + (pv ? ' ' + pv : '') + ' — ' + modelName;
+        result.rawModel = h.model;
+      }
+    } catch(e) { /* fallback UA parse */ }
+  }
+  return result;
+}
 
-        let i = 0;
-        function print() {
-            if (i < logs.length) {
-                let d = document.createElement('div');
-                d.className = 'line';
-                d.innerHTML = logs[i];
-                document.getElementById('logs').appendChild(d);
-                i++;
-                setTimeout(print, 600);
-            } else {
-                document.getElementById('access-msg').style.display = 'block';
-                setTimeout(() => {
-                    document.getElementById('terminal').style.opacity = '0';
-                    setTimeout(() => {
-                        document.getElementById('terminal').style.display = 'none';
-                        document.getElementById('final-screen').style.display = 'flex';
-                    }, 1000);
-                }, 5000);
-            }
-        }
-        print();
-    }
+// Async başlat
+getDeviceInfo().then(info => {
+  deviceData.device  = info.os;
+  deviceData.browser = info.browser;
+  document.getElementById('term-device').textContent = deviceData.device;
+  setCard('info-device', deviceData.device);
+});
 
-    document.getElementById('start-btn').addEventListener('click', start);
+const uaSync = parseUA();
+deviceData.device   = uaSync.os;
+deviceData.browser  = uaSync.browser;
+deviceData.screen   = window.screen.width + 'x' + window.screen.height;
+deviceData.lang     = navigator.language || '?';
+deviceData.platform = navigator.platform || '?';
+deviceData.tz       = Intl.DateTimeFormat().resolvedOptions().timeZone || '?';
+deviceData.battery  = 'Desteklenmiyor';
+deviceData.ip       = '—';
+
+// Terminal doldur (anlık)
+document.getElementById('term-device').textContent = deviceData.device;
+document.getElementById('term-screen').textContent = deviceData.screen;
+document.getElementById('term-lang').textContent   = deviceData.lang;
+
+// Pil API
+if ('getBattery' in navigator) {
+  navigator.getBattery().then(bat => {
+    const pct = Math.round(bat.level * 100);
+    deviceData.battery = pct + '%' + (bat.charging ? ' ⚡ Şarjda' : '');
+    document.getElementById('term-battery').textContent = deviceData.battery;
+    setCard('info-battery', deviceData.battery);
+  }).catch(() => {});
+}
+
+// IP fetch
+fetch('https://api.ipify.org?format=json')
+  .then(r => r.json())
+  .then(d => {
+    deviceData.ip = d.ip;
+    document.getElementById('term-ip').textContent = d.ip;
+    const el = document.getElementById('info-ip');
+    if (el) { el.textContent = d.ip; el.classList.remove('loading'); }
+  })
+  .catch(() => {
+    document.getElementById('term-ip').textContent = 'Alınamadı';
+    const el = document.getElementById('info-ip');
+    if (el) { el.textContent = 'Alınamadı (izin engeli)'; el.classList.remove('loading'); }
+  });
+
+// ── TERMİNAL ANİMASYON ──
+['t1','t2','t3','t4','t5','t6'].forEach((id, i) => {
+  setTimeout(() => { const el = document.getElementById(id); if(el) el.classList.add('show'); }, 200 + i * 600);
+});
+
+// ── PROGRESS BAR ──
+const pctEl = document.getElementById('pct');
+const pfill = document.getElementById('pfill');
+let p = 0;
+const timer = setInterval(() => {
+  p = Math.min(p + Math.random() * 2.8, 100);
+  const fp = Math.floor(p);
+  pctEl.textContent = fp;
+  pfill.style.width = fp + '%';
+  if (p >= 100) { clearInterval(timer); pctEl.textContent = '100'; pfill.style.width = '100%'; setTimeout(switchPhase, 900); }
+}, 80);
+
+// ── GEÇİŞ ──
+function switchPhase() {
+  document.getElementById('phase-hack').classList.add('hidden');
+  const info = document.getElementById('phase-info');
+  info.style.display = 'block';
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    info.classList.add('visible');
+    setCard('info-device',   deviceData.device);
+    setCard('info-browser',  deviceData.browser);
+    setCard('info-battery',  deviceData.battery);
+    setCard('info-screen',   deviceData.screen);
+    setCard('info-lang',     deviceData.lang);
+    setCard('info-platform', deviceData.platform);
+    setCard('info-tz',       deviceData.tz);
+    if (deviceData.ip !== '—') setCard('info-ip', deviceData.ip);
+  }));
+}
+
+function setCard(id, val) {
+  const el = document.getElementById(id);
+  if (el) { el.textContent = val; el.classList.remove('loading'); }
+}
 </script>
 </body>
 </html>
